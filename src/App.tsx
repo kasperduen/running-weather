@@ -1,51 +1,104 @@
 import React, { useEffect, useState } from "react";
-import logo from "./logo.svg";
 import "./styles/App.css";
 import "./styles/weather-icons.min.css";
 import "./styles/weather-icons-wind.min.css";
 import axios from "axios";
+import { format } from "date-fns";
 
 const apiKey = "35ea9aa24779e05fcd12b7300dd7e6e3";
 
 function App() {
-    // 35ea9aa24779e05fcd12b7300dd7e6e3
-    const [position, setPosition] = useState({ lat: null, long: null });
+  const [position, setPosition] = useState({ lat: null, long: null });
+  const [currentWeather, setCurrentWeather] = useState<any>({});
 
-    useEffect(() => {
-        getWeather();
-    }, [position]);
-
-    useEffect(() => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(showPosition);
-        }
-    }, []);
-
-    const getWeather = async () => {
-        if (!position) {
-            return;
-        }
-        const weather = await axios.get(
-            `https://api.openweathermap.org/data/2.5/onecall?lat=${position?.lat}&lon=${position?.long}&exclude=minutely,alerts&appid=${apiKey}&units=metric`
-        );
-        console.log({ weather });
-    };
-
-    function showPosition(position: any) {
-        const { latitude, longitude } = position.coords;
-        setPosition({ lat: latitude, long: longitude });
+  const getWeatherClothes = ({ temp }: any) => {
+    const temperature = temp;
+    if (!temperature) {
+      return "";
     }
+    if (temperature >= 16) {
+      return "tank top and shorts";
+    }
+    if (temperature < 16 && temperature >= 10) {
+      return "short sleeve tech shirt and shorts";
+    }
+    if (temperature < 10 && temperature >= 5) {
+      return "long sleeve tech shirt, shorts or tights, gloves (optional), headband to cover ears (optional)";
+    }
+    if (temperature < 5 && temperature >= -1) {
+      return "long sleeve tech shirt, shorts or tights, gloves, and headband to cover ears";
+    }
+    if (temperature < -1 && temperature >= -7) {
+      return "two shirts layered—a long sleeve tech shirt and a short sleeve tech shirt or long sleeve shirt and jacket—tights, gloves, and headband or hat to cover ears";
+    }
+    if (temperature < -7 && temperature >= -12) {
+      return "two shirts layered, tights, gloves or mittens, headband or hat, and windbreaker jacket/pants";
+    }
+    if (temperature < -12) {
+      return "two shirts layered, tights, windbreaker jacket/pants, mittens, headband or hat, ski mask to cover face";
+    }
+  };
 
-    return (
-        <div className="App">
-            <div className="weather-card">
-                <h1>Running Weather</h1>
-                <div className="weather-summary">
-                    <h3></h3>
-                </div>
-            </div>
-        </div>
+  useEffect(() => {
+    getWeather();
+  }, [position]);
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(showPosition);
+    }
+  }, []);
+
+  const getWeather = async () => {
+    if (!position || !position.lat || !position.long) {
+      return;
+    }
+    const { data } = await axios.get(
+      `https://api.openweathermap.org/data/2.5/onecall?lat=${position?.lat}&lon=${position?.long}&exclude=minutely,alerts&appid=${apiKey}&units=metric`
     );
+
+    setCurrentWeather(data?.current);
+  };
+
+  function showPosition(position: any) {
+    const { latitude, longitude } = position.coords;
+    setPosition({ lat: latitude, long: longitude });
+  }
+
+  if (!position || !currentWeather) {
+    return (
+      <div className="app">
+        <p className="loading-text">Loading...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="app">
+      <div className="weather-card">
+        <p className="weather-card--date">{format(new Date(), "PPP")}</p>
+        {currentWeather.weather && (
+          <h1 className="weather-card--weather-description">
+            {currentWeather.weather[0].main}
+            <img
+              alt="weather icon"
+              src={`http://openweathermap.org/img/wn/${currentWeather.weather[0].icon.replace(
+                "n",
+                "d"
+              )}.png`}
+            />
+          </h1>
+        )}
+        <div className="card-temperature-container">
+          <h3>{currentWeather?.temp} C</h3>
+        </div>
+        <div className="card-clothing-recommendation">
+          <h2>What to wear?</h2>
+          <h3>{getWeatherClothes(currentWeather)}</h3>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default App;

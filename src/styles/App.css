@@ -1,0 +1,58 @@
+:root {
+  --card-background: white;
+}
+.app {
+  display: flex;
+  align-items: center;
+  height: 100vh;
+  margin: 0px;
+  justify-content: center;
+}
+.weather-card {
+  border-radius: 12px;
+  padding: 16px;
+  width: 100%;
+  color: white;
+  max-width: 420px;
+}
+.weather-card--date {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 500;
+  margin: 0px;
+}
+.weather-card h1 {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0px;
+}
+.card-temperature-container {
+  display: flex;
+}
+.weather-card--weather-description i {
+  padding-left: 8px;
+}
+.card-temperature-container h3 {
+  width: 100%;
+  text-align: center;
+  margin: 0px;
+  padding: 20px;
+  font-size: 80px;
+  font-weight: 400;
+}
+.card-clothing-recommendation h2 {
+  font-weight: 900;
+  margin: 0px;
+}
+.card-clothing-recommendation h3 {
+  font-size: 26px;
+  font-weight: 400;
+  margin: 0px;
+  padding: 4px 0px;
+}
+.loading-text {
+  font-size: 40px;
+  color: white;
+}
