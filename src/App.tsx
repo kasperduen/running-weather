@@ -10,6 +10,8 @@ const apiKey = "35ea9aa24779e05fcd12b7300dd7e6e3";
 function App() {
   const [position, setPosition] = useState({ lat: null, long: null });
   const [currentWeather, setCurrentWeather] = useState<any>({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [locationEnabled, setLocationEnabled] = useState(true);
 
   const getWeatherClothes = ({ temp }: any) => {
     const temperature = temp;
@@ -46,6 +48,8 @@ function App() {
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(showPosition);
+    } else {
+      setLocationEnabled(false);
     }
   }, []);
 
@@ -58,6 +62,7 @@ function App() {
     );
 
     setCurrentWeather(data?.current);
+    setIsLoading(false);
   };
 
   function showPosition(position: any) {
@@ -65,7 +70,16 @@ function App() {
     setPosition({ lat: latitude, long: longitude });
   }
 
-  if (!position || !currentWeather) {
+  if (!locationEnabled) {
+    <div className="app">
+      <p className="loading-text">
+        Browser location feature has not been enabled. Please enable it before
+        we can continue
+      </p>
+    </div>;
+  }
+
+  if (isLoading) {
     return (
       <div className="app">
         <p className="loading-text">Loading...</p>
