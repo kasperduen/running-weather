@@ -12,6 +12,10 @@ function App() {
   const [currentWeather, setCurrentWeather] = useState<any>({});
   const [isLoading, setIsLoading] = useState(true);
   const [locationEnabled, setLocationEnabled] = useState(true);
+  const [unit, setUnit] = useState<{ value: number; unit: string }>({
+    value: 0,
+    unit: "C",
+  });
 
   const getWeatherClothes = ({ temp }: any) => {
     const temperature = temp;
@@ -22,10 +26,10 @@ function App() {
       return "tank top and shorts";
     }
     if (temperature < 16 && temperature >= 10) {
-      return "short sleeve tech shirt and shorts";
+      return "short sleeve \r tech shirt and shorts";
     }
     if (temperature < 10 && temperature >= 5) {
-      return "long sleeve tech shirt, shorts or tights, gloves (optional), headband to cover ears (optional)";
+      return "long sleeve tech shirt shorts or tights, gloves (optional), headband to cover ears (optional)";
     }
     if (temperature < 5 && temperature >= -1) {
       return "long sleeve tech shirt, shorts or tights, gloves, and headband to cover ears";
@@ -47,7 +51,9 @@ function App() {
 
   useEffect(() => {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(showPosition);
+      navigator.geolocation.getCurrentPosition(showPosition, (err) => {
+        setLocationEnabled(false);
+      });
     } else {
       setLocationEnabled(false);
     }
@@ -61,9 +67,30 @@ function App() {
       `https://api.openweathermap.org/data/2.5/onecall?lat=${position?.lat}&lon=${position?.long}&exclude=minutely,alerts&appid=${apiKey}&units=metric`
     );
 
+    setUnit({ value: data?.current?.temp.toFixed(0), unit: "C" });
     setCurrentWeather(data?.current);
     setIsLoading(false);
   };
+
+  function cToF(celsius: number) {
+    const cTemp = celsius;
+    const cToFahr = (cTemp * 9) / 5 + 32;
+    setUnit({ value: cToFahr, unit: "F" });
+  }
+
+  function fToC(fahrenheit: number) {
+    const fTemp = fahrenheit;
+    const fToCel = ((fTemp - 32) * 5) / 9;
+    setUnit({ value: fToCel, unit: "C" });
+  }
+
+  function convertTemp() {
+    if (unit.unit === "F") {
+      fToC(unit.value);
+    } else {
+      cToF(unit.value);
+    }
+  }
 
   function showPosition(position: any) {
     const { latitude, longitude } = position.coords;
@@ -103,8 +130,13 @@ function App() {
             />
           </h1>
         )}
-        <div className="card-temperature-container">
-          <h3>{currentWeather?.temp} C</h3>
+        <div
+          className="card-temperature-container"
+          onClick={() => convertTemp()}
+        >
+          <h3>
+            {unit.value} {unit.unit}
+          </h3>
         </div>
         <div className="card-clothing-recommendation">
           <h2>What to wear?</h2>

@@ -12,7 +12,8 @@
   border-radius: 12px;
   padding: 16px;
   width: 100%;
-  color: white;
+  background: white;
+  color: black;
   max-width: 420px;
 }
 .weather-card--date {
@@ -27,6 +28,7 @@
   align-items: center;
   justify-content: center;
   margin: 0px;
+  font-weight: bold;
 }
 .card-temperature-container {
   display: flex;
@@ -40,15 +42,15 @@
   margin: 0px;
   padding: 20px;
   font-size: 80px;
-  font-weight: 400;
+  font-weight: bold;
 }
 .card-clothing-recommendation h2 {
   font-weight: 900;
   margin: 0px;
 }
 .card-clothing-recommendation h3 {
-  font-size: 26px;
-  font-weight: 400;
+  font-size: 24px;
+  font-weight: 300;
   margin: 0px;
   padding: 4px 0px;
 }
